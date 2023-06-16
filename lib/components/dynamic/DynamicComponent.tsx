@@ -18,5 +18,5 @@ export const DynamicComponent = ({
     return <div>Loading...</div>;
   }
 
-  return <DynComponent />;
+  return <DynComponent hallo={scope} />;
 };

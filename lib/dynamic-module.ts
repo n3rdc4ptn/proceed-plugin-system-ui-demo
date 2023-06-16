@@ -12,23 +12,18 @@ interface Container {
 declare const __webpack_init_sharing__: (shareScope: string) => Promise<void>;
 declare const __webpack_share_scopes__: { default: string };
 
-function loadModule(url: string) {
+function loadModule(url: string, scope?: string) {
   return injectScript({
     url,
-    global: "remote",
+    global: scope,
   });
-  // try {
-  //   return import(/* webpackIgnore:true */ url);
-  // } catch (e) {}
-  // return null;
 }
 
 function loadComponent(remoteUrl: string, scope: string, module: string) {
   return async () => {
     // eslint-disable-next-line no-undef
     await __webpack_init_sharing__("default");
-    const container: Container = await loadModule(remoteUrl);
-    console.log(container);
+    const container: Container = await loadModule(remoteUrl, scope);
     // eslint-disable-next-line no-undef
     await container.init(__webpack_share_scopes__.default);
     const factory = await container.get(module);
@@ -44,7 +39,9 @@ export const useFederatedComponent = (
   module: string
 ) => {
   const key = `${remoteUrl}-${scope}-${module}`;
-  const [Component, setComponent] = React.useState<ComponentType | null>(null);
+  const [Component, setComponent] = React.useState<ComponentType<{
+    hallo: string;
+  }> | null>(null);
 
   React.useEffect(() => {
     if (Component) setComponent(null);
